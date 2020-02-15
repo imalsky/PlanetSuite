@@ -1,0 +1,55 @@
+
+&star_job
+      show_log_description_at_start = .true. 
+
+      save_model_when_terminate = .true.
+      save_model_filename = 'create.mod'
+
+      load_saved_model = .true.
+      saved_model_name = '0.001Msun.mod'
+
+      change_initial_net = .true.      
+      new_net_name = 'basic.net'
+
+      set_initial_age = .true.
+      initial_age = 0
+
+      eos_file_prefix = 'mesa'
+      kappa_file_prefix = 'gs98'
+      kappa_lowT_prefix = 'lowT_Freedman11'
+
+      set_tau_factor = .true. ! change tau_factor without reconverging.
+      set_to_this_tau_factor = 100
+      
+      change_lnPgas_flag = .true.
+      new_lnPgas_flag = .true.
+
+    steps_to_take_before_terminate = 25000 
+/ ! end of star_job namelist
+
+&controls 
+
+      
+      max_number_backups = 10
+      max_number_retries = 50
+      max_model_number = 500
+
+      initial_mass = 0.001
+      initial_z = 0.02d0
+      initial_y = 0.24d0
+      
+      log_Psurf_upper_limit = 6
+
+      mixing_length_alpha = 1.89d0
+      MLT_option = 'Henyey'
+      
+      max_age = 15d9
+      max_years_for_timestep = 1d9
+      
+      which_atm_option = 'grey_and_kap'
+      use_Type2_opacities = .false.
+
+/ ! end of controls namelist
+
+&pgstar
+/ ! end of pgstar namelist

@@ -1,0 +1,65 @@
+! inlist_relaxirradiation
+
+&star_job
+
+      show_log_description_at_start = .true.
+
+      save_model_when_terminate = .true.
+      save_model_filename = <<smwtfname>>
+
+      load_saved_model = .true.
+      saved_model_name = <<loadfile>>
+
+      write_profile_when_terminate = .true.
+      filename_for_profile_when_terminate = <<irrad_profile>>
+
+      relax_irradiation = .true.
+      relax_initial_irradiation = .true.
+      relax_to_this_irrad_flux = <<flux_dayside>>
+      relax_irradiation_min_steps = 0
+      relax_irradiation_max_yrs_dt = -1
+      irrad_col_depth = <<column_depth>>
+
+      set_initial_age = .true.
+      initial_age = 0
+
+      set_initial_model_number = .true.
+      initial_model_number = 0
+
+      steps_to_take_before_terminate = 10000  ! don't let it go on and on if run stuck
+      !Sets max_model_number = model_number + steps_to_take_before_terminate.
+
+      eos_file_prefix = 'mesa'
+      kappa_file_prefix = 'gs98'
+      kappa_lowT_prefix = 'lowT_Freedman11'
+      
+      change_lnPgas_flag = .true.
+      new_lnPgas_flag = .true.
+    steps_to_take_before_terminate = 25000 
+/ ! end of star_job namelist
+
+
+&controls 
+
+      
+
+   use_other_energy = .true.
+   x_ctrl(3) = 1d10 ! core heat capacity  eps=erg/g/K
+   x_ctrl(4) = 1.0 ! fraction of core mass in "chondrite-like" rocky material
+
+	! when to stop
+	max_age = 6d6
+   max_model_number = 2500
+   max_num_profile_models = 5000
+	!Teff_lower_limit = -1d99
+	!T_mix_limit = 0
+
+	!terminal_interval = 10
+
+   star_history_name = <<smwtfname>>
+
+/ ! end of controls namelist
+
+
+&pgstar
+/ ! end of pgstar namelist

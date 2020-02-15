@@ -1,0 +1,57 @@
+
+&star_job
+      show_log_description_at_start = .true. 
+
+      save_model_when_terminate = .true.
+      save_model_filename = <<smwtfname>>
+
+      load_saved_model = .true.
+      saved_model_name = <<loadfile>>
+
+      change_initial_net = .true.      
+      new_net_name = 'basic.net'
+
+      set_initial_model_number = .true.
+      initial_model_number = 0
+
+      set_initial_dt = .true.
+      years_for_initial_dt = 1d3 ! in years
+
+      set_initial_age = .true.
+      initial_age = 0
+
+      eos_file_prefix = 'mesa'
+      kappa_file_prefix = 'gs98'
+      kappa_lowT_prefix = 'lowT_Freedman11'
+
+      set_tau_factor = .true. ! change tau_factor without reconverging.
+      set_to_this_tau_factor = 100
+      
+      change_lnPgas_flag = .true.
+      new_lnPgas_flag = .true.
+
+    steps_to_take_before_terminate = 25000 
+/ ! end of star_job namelist
+
+&controls 
+
+      
+      max_age = 1d6
+      max_years_for_timestep = 1d5
+
+      max_number_backups = 100
+      max_number_retries = 500
+      max_model_number = 1000
+      
+      mesh_delta_coeff = 0.5
+      use_Type2_opacities = .false.
+
+      mixing_length_alpha = 1.89d0
+      MLT_option = 'Henyey'
+      
+      star_history_name = <<smwtfname>>
+/ ! end of controls namelist
+
+
+&pgstar
+/ ! end of pgstar namelist

@@ -1,0 +1,16 @@
+
+      log_star_age
+      luminosity ! luminosity in Lsun units
+	  star_mass
+	  radius
+	  surface h1
+	  surface he4
+	  total_mass h1
+      total_mass he4
+      mass_semiconv_core
+      he_core_mass
+      he_core_radius
+      c_core_mass
+      center_entropy
+      luminosity ! luminosity in Lsun units
+      luminosity_ergs_s ! luminosity in cgs units

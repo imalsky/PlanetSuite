@@ -1,0 +1,78 @@
+
+
+&star_job
+  show_log_description_at_start = .true.
+
+  load_saved_model = .true.
+  saved_model_name = <<loadfile>>
+
+  save_model_when_terminate = .true.
+  save_model_filename = <<smwtfname>>
+  
+  write_profile_when_terminate = .true.
+  filename_for_profile_when_terminate = <<evolve_profile>>
+  
+  set_initial_model_number = .true.
+  initial_model_number = 0       
+
+  set_initial_age = .true.
+  initial_age = <<formation_time>>
+
+  eos_file_prefix = 'mesa'
+  kappa_file_prefix = 'gs98'
+  kappa_lowT_prefix = 'lowT_Freedman11'
+  
+  change_lnPgas_flag = .true.
+  new_lnPgas_flag = .true.
+  pgstar_flag = .false.
+
+  steps_to_take_before_terminate = 10000 
+/ ! end of star_job namelist
+
+&controls   
+  max_number_backups = 100
+  max_number_retries = 500
+
+  varcontrol_target = 9d-5
+  mesh_delta_coeff = 0.5
+
+  ! surface heating
+  column_depth_for_irradiation = <<column_depth>> ! 3.d2 cm^2/g
+  irradiation_flux = <<flux_dayside>>! 1.d9 erg/cm^2/s ! day side flux!!! Bill puts in 1/4 by hand
+
+  ! when to stop
+  max_age = 1d10
+  max_model_number = 5000 ! don't let it go on and on if run stuck
+  Teff_lower_limit = -1d99
+  T_mix_limit = 0
+  logQ_limit=1000
+      
+  ! output to files and terminal
+  photo_interval  = 10
+  profile_interval = 10
+  max_num_profile_models= 500
+  history_interval = 1
+  !terminal_cnt = 10
+  write_header_frequency = 10
+
+  x_ctrl(50)= <<n_frac>>                  !frac_absorbed_euv (η)
+  x_ctrl(51)= <<a>>                       !frac_absorbing_radius (a)
+  x_ctrl(52)= <<ms>>                      !host_star_mass (this gets multiplied by msol)
+  x_ctrl(53)= <<BA>>                      !Bond Albedo
+  x_ctrl(54)= <<orb_sep>>                 !orbital_distance (this gets multipled by au)
+  x_ctrl(55)= <<ec>>                      !eddy coefficient
+  x_ctrl(56)= 1		                        !Only run the comp change if true 
+  x_ctrl(57)= <<teq>>                     !teq
+  x_ctrl(58)= <<escape_regime>>           !0 is Hu, 1 is Murray Clay, 2 is nothing. Dont do 2.
+  x_ctrl(59)= <<diff_sep>>                !Diffusive separation
+	
+  use_other_adjust_mdot = .true.
+  use_other_energy = .true.
+  x_ctrl(3) = 1d10 ! core heat capacity  eps=erg/g/K
+  x_ctrl(4) = 1.0 ! fraction of core mass in "chondrite-like" rocky material
+
+  star_history_name = <<smwtfname>>
+
+/ ! end of controls namelist
+&pgstar
+/ ! end of pgstar namelist
