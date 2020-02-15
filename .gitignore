@@ -1,0 +1,45 @@
+# Ignore all the new inlists
+inlist_comp_*
+inlist_corer_*
+inlist_corel_*
+inlist_reduce_*
+inlist_remove_heating_*
+inlist_corem_*
+inlist_irrad_*
+inlist_evolve_*
+inlist_heating_*
+inlist_pre_core_*
+inlist_pre_core_*
+inlist_remove_cooling_*
+inlist_cooling_*
+
+# Ignore all the new mod files
+comp_*
+corer_*
+corel_*
+reduce_*
+remove_*
+corem_*
+heating_*
+pre_core_*
+profile_irrad*
+profile_remove_heating*
+profile_remove_cooling*
+irrad*
+
+# Ignore LOGS and photos folder
+# Definetly ignore these
+photos/*
+LOGS/*
+
+# Ignore more stuff
+comp_*
+corer_*
+corel_*
+reduce_*
+remove_*
+corem_*
+heating_*
+irrad_*
+evolve_*
+pre_core_*
