@@ -334,7 +334,7 @@ def run_irrad(irrad_profile, inlist_irrad, remove_mod, irrad_mod, column_depth, 
 
 def run_evolve(evolve_profile, inlist_evolve, irrad_mod, evolve_mod,
 				n_frac, a, ms, orb_sep, ec, column_depth, flux_dayside,
-				formation_time, teq, BA, escape_regime, diff_sep):
+				formation_time, teq, BA, escape_regime, diff_sep, homopause_temp):
 
 	start_time = time.time()
 	print ("create initial planet")
@@ -362,6 +362,7 @@ def run_evolve(evolve_profile, inlist_evolve, irrad_mod, evolve_mod,
 	g = g.replace("<<teq>>", str(teq))
 	g = g.replace("<<escape_regime>>", str(escape_regime))
 	g = g.replace("<<diff_sep>>", str(diff_sep))
+	g = g.replace("<<homopause_temp>>", str(homopause_temp))
 	
 	h = open(inlist_evolve, 'w')
 	h.write(g)

@@ -65,6 +65,7 @@
   x_ctrl(57)= <<teq>>                     !teq
   x_ctrl(58)= <<escape_regime>>           !0 is Hu, 1 is Murray Clay, 2 is nothing. Dont do 2.
   x_ctrl(59)= <<diff_sep>>                !Diffusive separation
+  x_ctrl(60)= <<homopause_temp>>          !Homopause_temp
 	
   use_other_adjust_mdot = .true.
   use_other_energy = .true.

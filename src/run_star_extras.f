@@ -119,7 +119,7 @@
         escape_regime = s% x_ctrl(58)
     
         !Heigh parameters
-        homopause_temp = 10000
+        homopause_temp = s% x_ctrl(60)
 
         !From Hu and Seager
         mass_fractionation_effect = 8.0 * (10 ** 20)

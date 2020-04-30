@@ -21,9 +21,9 @@ initial_mod = "initial_planet.mod"
 ####################################################
 #########         PARAMETERS LISTS         #########
 ####################################################
-mpList=[5.0]
-orbitalList=[0.005, 0.10, 0.20, 0.30, 0.40, 0.50]
-enFracList=[0.005, 0.01, 0.025, 0.05, 0.10]
+mpList=[10.0]
+orbitalList=[0.1]
+enFracList=[0.01]
 yList = [.24]
 zList = [.02]
 entropyList = [-1]
@@ -31,24 +31,34 @@ n_frac_list = [.10]
 
 
 ####################################################
-#########        IRRAD/EVOL CONDITIONS        ######
+#########        Star Parameters              ######
 ####################################################                            
-rs = 1.0                     #star radius in rsun
-Teff_star = 6000                 #Host Star Temp
-BA= 0.20                         #planet Bond albedo
+rs = 1.0                        #star radius in rsun
+Teff_star = 6000                #Host Star Temp
+ms = 1.0                        #host_star_mass
+
+
+####################################################
+#########        hompause temperature         ######
+####################################################   
+hompause_temp = 10000
+
+
+####################################################
+#########     Mass Loss Assumptions           ######
+####################################################    
 a = 1.0                          #frac_absorbing_radius
-ms = 1.0                         #host_star_mass
+BA= 0.20                         #planet Bond albedo
 ec = 1e9                         #eddy coefficient
 formation_time = 6e6             #Disk formation time
+
 
 
 # Mass Loss Regime
 escape_type = 'hu'
 
-# Diffusive Separation
-# 1 is on 0 is off
+# Diffusive Separation, 1 is on 0 is off
 diff_sep = 1
-
 
 # This is for setting the type of escape
 # Only hu et. at 2017 or something
@@ -149,7 +159,9 @@ for mp in mpList:
 										evolve_mod = "evolve_" + str(mp) + "_" + str(enFrac) + "_" + str(y) + "_" + str(z) + "_" + str(orb_sep)+ "_" + str(entropy) + "_" + str(n_frac) + ".mod"
 										evolve_profile = "profile_evolve" + str(mp) + "_" + str(enFrac) + "_" + str(y) + "_" + str(z) + "_" + str(orb_sep)+ "_" + str(entropy) + "_" + str(n_frac)
 										inlist_evolve = "inlist_evolve_" + str(mp) + "_" + str(enFrac) + "_" + str(y) + "_" + str(z) + "_" + str(orb_sep) + "_" + str(entropy) + "_" + str(n_frac)
-										run_time = my.run_evolve(evolve_profile, inlist_evolve, irrad_mod, evolve_mod, n_frac, a, ms, orb_sep, ec, column_depth, flux_dayside, formation_time, teq, BA, escape_regime, diff_sep)
+										run_time = my.run_evolve(evolve_profile, inlist_evolve, irrad_mod,
+											evolve_mod, n_frac, a, ms, orb_sep, ec, column_depth, flux_dayside,
+											formation_time, teq, BA, escape_regime, diff_sep, homopause_temp)
 									else:
 										pass
 								else:
@@ -184,7 +196,9 @@ for mp in mpList:
 										evolve_profile = "profile_evolve" + str(mp) + "_" + str(enFrac) + "_" + str(y) + "_" + str(z) + "_" + str(orb_sep)+ "_" + str(entropy) + "_" + str(n_frac)
 										inlist_evolve = "inlist_evolve_" + str(mp) + "_" + str(enFrac) + "_" + str(y) + "_" + str(z) + "_" + str(orb_sep) + "_" + str(entropy) + "_" + str(n_frac)
 
-										run_time = my.run_evolve(evolve_profile, inlist_evolve, irrad_mod, evolve_mod, n_frac, a, ms, orb_sep, ec, column_depth, flux_dayside, formation_time, teq, BA, escape_regime, diff_sep)
+										run_time = my.run_evolve(evolve_profile, inlist_evolve, irrad_mod,
+											evolve_mod, n_frac, a, ms, orb_sep, ec, column_depth, flux_dayside,
+											formation_time, teq, BA, escape_regime, diff_sep, homopause_temp)
 									else:
 										pass
 								else:
