@@ -33,7 +33,7 @@
   max_number_backups = 100
   max_number_retries = 500
 
-  varcontrol_target = 9d-5
+  varcontrol_target = 5d-5
   mesh_delta_coeff = 0.5
 
   ! surface heating
@@ -42,10 +42,10 @@
 
   ! when to stop
   max_age = 1d10
-  max_model_number = 5000 ! don't let it go on and on if run stuck
-  Teff_lower_limit = -1d99
-  T_mix_limit = 0
-  logQ_limit=1000
+  max_model_number = 2500 ! don't let it go on and on if run stuck
+  !Teff_lower_limit = -1d99
+  !T_mix_limit = 0
+  !logQ_limit=1000
       
   ! output to files and terminal
   photo_interval  = 10
