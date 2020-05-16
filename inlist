@@ -1,78 +1,63 @@
-
-
 &star_job
-  show_log_description_at_start = .true.
+      show_log_description_at_start = .true. 
 
-  load_saved_model = .true.
-  saved_model_name = "irrad_5.0_0.01_0.24_0.02_1.0_7.2.mod"
+      save_model_when_terminate = .true.
+      save_model_filename = "corem_10.0_0.004_0.24_0.02.mod"
 
-  save_model_when_terminate = .true.
-  save_model_filename = "evolve_5.0_0.01_0.24_0.02_1.0_7.2_0.1.mod"
-  
-  write_profile_when_terminate = .true.
-  filename_for_profile_when_terminate = "profile_evolve5.0_0.01_0.24_0.02_1.0_7.2_0.1"
-  
-  set_initial_model_number = .true.
-  initial_model_number = 0       
+      load_saved_model = .true.
+      saved_model_name = "reduce_10.0_0.004_0.24_0.02.mod"
 
-  set_initial_age = .true.
-  initial_age = 6000000.0
+      change_initial_net = .true.      
+      new_net_name = 'basic.net'
 
-  eos_file_prefix = 'mesa'
-  kappa_file_prefix = 'gs98'
-  kappa_lowT_prefix = 'lowT_Freedman11'
-  
-  change_lnPgas_flag = .true.
-  new_lnPgas_flag = .true.
-  pgstar_flag = .false.
+      set_initial_model_number = .true.
+      initial_model_number = 0
 
-  steps_to_take_before_terminate = 10000 
+      set_initial_dt = .true.
+      years_for_initial_dt = 1d3 ! in years
+
+      set_initial_age = .true.
+      initial_age = 0
+
+      eos_file_prefix = 'mesa'
+      kappa_file_prefix = 'gs98'
+      kappa_lowT_prefix = 'lowT_Freedman11'
+
+      set_tau_factor = .true. ! change tau_factor without reconverging.
+      set_to_this_tau_factor = 100
+      
+      change_lnPgas_flag = .true.
+      new_lnPgas_flag = .true.
+
+      relax_core = .true.
+      relax_initial_core = .true.
+      new_core_mass = 2.9892016891212554e-05
+      dlg_core_mass_per_step = 1d-4
+      relax_core_years_for_dt = 10000
+      core_avg_rho = 8.882085168498248
+      core_avg_eps = 1d-6
+
+    steps_to_take_before_terminate = 25000 
 / ! end of star_job namelist
 
-&controls   
-  max_number_backups = 100
-  max_number_retries = 500
+&controls 
 
-  varcontrol_target = 9d-5
-  mesh_delta_coeff = 0.5
-
-  ! surface heating
-  column_depth_for_irradiation = 18.35297783832337 ! 3.d2 cm^2/g
-  irradiation_flux = 1272355.2313586776! 1.d9 erg/cm^2/s ! day side flux!!! Bill puts in 1/4 by hand
-
-  ! when to stop
-  max_age = 1d10
-  max_model_number = 5000 ! don't let it go on and on if run stuck
-  Teff_lower_limit = -1d99
-  T_mix_limit = 0
-  logQ_limit=1000
       
-  ! output to files and terminal
-  photo_interval  = 10
-  profile_interval = 10
-  max_num_profile_models= 500
-  history_interval = 1
-  !terminal_cnt = 10
-  write_header_frequency = 10
+      max_age = 1d7
+      !max_years_for_timestep = 1d6
 
-  x_ctrl(50)= 0.1                  !frac_absorbed_euv (η)
-  x_ctrl(51)= 1.0                       !frac_absorbing_radius (a)
-  x_ctrl(52)= 1.0                      !host_star_mass (this gets multiplied by msol)
-  x_ctrl(53)= 0.2                      !Bond Albedo
-  x_ctrl(54)= 1.0                 !orbital_distance (this gets multipled by au)
-  x_ctrl(55)= 1000000000.0                      !eddy coefficient
-  x_ctrl(56)= 1		                        !Only run the comp change if true 
-  x_ctrl(57)= 273.6789105685002                     !teq
-  x_ctrl(58)= 0           !0 is Hu, 1 is Murray Clay, 2 is nothing. Dont do 2.
-  x_ctrl(59)= 1                !Diffusive separation
-	
-  use_other_adjust_mdot = .true.
-  use_other_energy = .true.
-  x_ctrl(3) = 1d10 ! core heat capacity  eps=erg/g/K
-  x_ctrl(4) = 1.0 ! fraction of core mass in "chondrite-like" rocky material
+      max_number_backups = 200
+      max_number_retries = 500
+      max_model_number = 1000
+      
+      mesh_delta_coeff = 0.5
+      use_Type2_opacities = .false.
 
-  star_history_name = "evolve_5.0_0.01_0.24_0.02_1.0_7.2_0.1.mod"
-
+      mixing_length_alpha = 1.89d0
+      MLT_option = 'Henyey'
+      
+      star_history_name = "corem_10.0_0.004_0.24_0.02.mod"
 / ! end of controls namelist
+
 &pgstar
 / ! end of pgstar namelist

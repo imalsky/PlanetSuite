@@ -7,7 +7,7 @@
 	  surface he4
 	  total_mass h1
       total_mass he4
-      mass_semiconv_core
+      total_mass ne20
       he_core_mass
       he_core_radius
       c_core_mass
