@@ -19,24 +19,21 @@
       eos_file_prefix = 'mesa'
       kappa_file_prefix = 'gs98'
       kappa_lowT_prefix = 'lowT_Freedman11'
-      
-      change_lnPgas_flag = .true.
-      new_lnPgas_flag = .true.
 
-      pgstar_flag = .false.
-      steps_to_take_before_terminate = 25000 
+      steps_to_take_before_terminate = 1000
 / ! end of star_job namelist
 
 &controls 
 
-  	varcontrol_target = 1d-4
-  	mesh_delta_coeff = 0.5
+    varcontrol_target = 1d-4
+    mesh_delta_coeff = 0.5
 
-	max_age = 1d8
-	max_model_number = 2500	! don't let it go on and on if run stuck
+    max_age = 1d8
+    max_model_number = 1000	! don't let it go on and on if run stuck
 
-	center_entropy_lower_limit = <<entropy>>
-        star_history_name = <<smwtfname>>
+    center_entropy_lower_limit = <<entropy>>
+    star_history_name = <<smwtfname>>
+
 / ! end of controls namelist
 
 

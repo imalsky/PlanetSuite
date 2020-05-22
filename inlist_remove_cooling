@@ -1,60 +1,45 @@
 &star_job
 
-      show_log_description_at_start = .false.
+    show_log_description_at_start = .false.
 
-      load_saved_model = .true.
-      saved_model_name = <<loadfile>>
+    load_saved_model = .true.
+    saved_model_name = <<loadfile>>
 
-      save_model_when_terminate = .true.
-      save_model_filename = <<smwtfname>>
+    save_model_when_terminate = .true.
+    save_model_filename = <<smwtfname>>
 
-      write_profile_when_terminate = .true.
-      filename_for_profile_when_terminate = <<remove_cooling_profile>>
-      
-      set_initial_age = .true.
-      initial_age = 0
+    write_profile_when_terminate = .true.
+    filename_for_profile_when_terminate = <<remove_cooling_profile>>
+    
+    set_initial_age = .true.
+    initial_age = 0
 
-      set_initial_model_number = .true.
-      initial_model_number = 0
+    set_initial_model_number = .true.
+    initial_model_number = 0
+    
+    ! add energy dissipation from the core
+    relax_L_center = .false.
+    new_L_center = 0  ! ergs/sec
+    dlgL_per_step = 1d-3   !too high causes convergence issues
+    relax_L_center_dt = 3.1558149984d1 ! secyer*1d-6
 
-      
-      ! add energy dissipation from the core
-      relax_L_center = .false.
-      new_L_center = 0  ! ergs/sec
-      dlgL_per_step = 1d-3   !too high causes convergence issues
-      relax_L_center_dt = 3.1558149984d1 ! secyer*1d-6
+    set_initial_age = .true.
+    initial_age = 0
 
-      set_initial_age = .true.
-      initial_age = 0
+    eos_file_prefix = 'mesa'
+    kappa_file_prefix = 'gs98'
+    kappa_lowT_prefix = 'lowT_Freedman11'
 
-      eos_file_prefix = 'mesa'
-      kappa_file_prefix = 'gs98'
-      kappa_lowT_prefix = 'lowT_Freedman11'
-
-      
-      change_lnPgas_flag = .true.
-      new_lnPgas_flag = .true.
-
-      steps_to_take_before_terminate = 25000 
+    steps_to_take_before_terminate = 1000 
 / ! end of star_job namelist
 
-&controls 
-
-      
-
-	! interior heating
-	!inject_uniform_extra_heat = 0.0
-
-	! when to stop
-	max_age = 1d4
-	max_model_number = 500	! don't let it go on and on if run stuck
-	Teff_lower_limit = 10
-  logQ_limit=20000000000
-
-  star_history_name = <<smwtfname>>
+&controls
+    ! when to stop
+    max_age = 1d4
+    max_model_number = 500	! don't let it go on and on if run stuck
+    star_history_name = <<smwtfname>>
 / ! end of controls namelist
 
 
 &pgstar
-
 / ! end of pgstar namelist

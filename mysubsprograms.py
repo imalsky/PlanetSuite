@@ -47,19 +47,14 @@ def calculate_column_depth(Teq, profile, Teff_star):
     e = 2.7182818284
 
     if Teff_star < 3500:
-        print ('here_test1', Teff_star)
         T,P, k_r, k_p = loadtxt('OpacityTableSolarMetal.txt', unpack=True, skiprows =38, usecols=[0,1,5,6])
     elif 3500 <= Teff_star < 4500:
-        print ('here_test2', Teff_star)
         T,P, k_r, k_p = loadtxt('OpacityTableSolarMetal.txt', unpack=True, skiprows =38, usecols=[0,1,7,8])
     elif 4500 <= Teff_star < 5500:
-        print ('here_test2', Teff_star)
         T,P, k_r, k_p = loadtxt('OpacityTableSolarMetal.txt', unpack=True, skiprows =38, usecols=[0,1,9,10])
     elif 5500 <= Teff_star < 6500:
-        print ('here_test3', Teff_star)
         T,P, k_r, k_p = loadtxt('OpacityTableSolarMetal.txt', unpack=True, skiprows =38, usecols=[0,1,11,12])
     else:
-        print ('here_test4', Teff_star)
         T,P, k_r, k_p = loadtxt('OpacityTableSolarMetal.txt', unpack=True, skiprows =38, usecols=[0,1,13,14])
 
     Opacity_function = interpolate.interp2d(T, P, k_p)
@@ -97,19 +92,16 @@ def run_pre_reduce(inlist_pre_reduce, initial_mod, pre_reduce_mod, mp):
 
 	g = g.replace("<<loadfile>>",'"' + initial_mod + '"')
 	g = g.replace("<<smwtfname>>", '"' + pre_reduce_mod + '"')
-	g = g.replace("<<mp>>",str((mp * 30 * mearth / msun)))
-	
+	g = g.replace("<<mp>>",str(mp * 10 * mearth / msun))
 
 	h = open(inlist_pre_reduce, 'w')
 	h.write(g)
 	h.close()
 	shutil.copyfile(inlist_pre_reduce, "inlist")
 
-
 	os.system('./star_make_planets')
 	run_time = time.time() - start_time
 	return run_time
-
 
 
 def run_pre_core(inlist_pre_core, pre_reduce_mod, pre_core_mod, enFrac,core_mass,rho):
@@ -121,7 +113,7 @@ def run_pre_core(inlist_pre_core, pre_reduce_mod, pre_core_mod, enFrac,core_mass
 
 	g = g.replace("<<loadfile>>",'"' + pre_reduce_mod + '"')
 	g = g.replace("<<smwtfname>>", '"' + pre_core_mod + '"')
-	g = g.replace("<<core_mass>>", str(.1 * core_mass * mearth / msun))
+	g = g.replace("<<core_mass>>", str(0.1 * core_mass * mearth / msun))
 	g = g.replace("<<rho>>", str(rho))
 	
 	h = open(inlist_pre_core, 'w')
@@ -135,14 +127,14 @@ def run_pre_core(inlist_pre_core, pre_reduce_mod, pre_core_mod, enFrac,core_mass
 
 
 
-def run_comp(initial_mod,inlist_comp, comp_mod, z, y):
+def run_comp(inlist_comp, pre_core_mod, comp_mod, z, y):
 	start_time = time.time()
 	print ("create initial planet")
 	f = open('inlist_comp', 'r')
 	g = f.read()
 	f.close()
 
-	g = g.replace("<<initial_mod>>",'"' + initial_mod + '"')
+	g = g.replace("<<pre_core_mod>>",'"' + pre_core_mod + '"')
 	g = g.replace("<<smwtfname>>", '"' + comp_mod + '"')
 	g = g.replace("<<y>>",str(y))
 	g = g.replace("<<z>>",str(z))
