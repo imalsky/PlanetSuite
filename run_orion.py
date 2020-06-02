@@ -72,7 +72,7 @@ else:
 ####################################################  
 for mp in mpList:
     pre_reduce_mod = "pre_reduce_" + str(mp) + "_" + ".mod"
-    inlist_pre_reduce = "inlist_reduce_" + str(mp)
+    inlist_pre_reduce = "inlist_pre_reduce_" + str(mp)
     run_time = my.run_pre_reduce(inlist_pre_reduce, initial_mod, pre_reduce_mod, mp)
 
     for enFrac in enFracList:
