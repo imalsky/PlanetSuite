@@ -626,7 +626,7 @@
                     total_loss_rate = escape_rate_h1 + escape_rate_he4
 
                     do i = 1, s% nz
-                        s% xa(1,i) = ((envelope_mass * s% xa(1,1)) - (escape_rate_h1 * s% dt)) &
+                        s% xa(1,i) = ((envelope_mass * s% xa(1,i)) - (escape_rate_h1 * s% dt)) &
                         / (envelope_mass - (escape_rate_h1 * s% dt))
 
                         s% xa(2,i) = (s% xa(2,i) * envelope_mass) / (envelope_mass - (total_loss_rate * s% dt))
@@ -644,10 +644,10 @@
                     total_loss_rate = escape_rate_h1 + escape_rate_he4
 
                     do i = 1, s% nz
-                        s% xa(1,i) = ((envelope_mass * s% xa(1,1)) - (escape_rate_h1 * s% dt)) &
+                        s% xa(1,i) = ((envelope_mass * s% xa(1,i)) - (escape_rate_h1 * s% dt)) &
                         / (envelope_mass - (total_loss_rate * s% dt))
 
-                        s% xa(3,i) = ((envelope_mass * s% xa(3,1)) - (escape_rate_he4 * s% dt)) &
+                        s% xa(3,i) = ((envelope_mass * s% xa(3,i)) - (escape_rate_he4 * s% dt)) &
                         / (envelope_mass - (total_loss_rate * s% dt))
 
                         s% xa(2,i) = (s% xa(2,i) * envelope_mass) / (envelope_mass - (total_loss_rate * s% dt))
