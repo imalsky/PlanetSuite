@@ -92,7 +92,7 @@ def run_pre_reduce(inlist_pre_reduce, initial_mod, pre_reduce_mod, mp):
 
 	g = g.replace("<<loadfile>>",'"' + initial_mod + '"')
 	g = g.replace("<<smwtfname>>", '"' + pre_reduce_mod + '"')
-	g = g.replace("<<mp>>",str(mp * 10 * mearth / msun))
+	g = g.replace("<<mp>>",str(mp * 5.0 * mearth / msun))
 
 	h = open(inlist_pre_reduce, 'w')
 	h.write(g)
