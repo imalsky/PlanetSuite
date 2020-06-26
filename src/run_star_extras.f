@@ -90,6 +90,16 @@
         ! Radiation Recombination Limited variables
         double precision :: c_s, hv, alpha, rr_mass_loss, flux_term, exoponent_term
 
+        ! Calculating the ionization fraction from the saha equation
+        double precision :: ionization_frac, number_density, planck_const, electron_mass
+        double precision :: saha_temp_one, saha_temp_two, saha_temp_three
+        double precision :: saha_val
+
+        ! Calculating the effective binary diffusion coefficient
+        double precision :: boltzman_cgs, binary_diff_coeff
+        double precision :: momentum_transfer_H_He, temp_val_one, temp_val_two
+        double precision :: final_b
+
         integer :: k,i,j
 
         call star_ptr(id, s, ierr)
@@ -118,8 +128,28 @@
         teq = s% x_ctrl(57)
         escape_regime = s% x_ctrl(58)
     
-        !Heigh parameters
-        homopause_temp = s% x_ctrl(60)
+        homopause_temp = s% x_ctrl(60)  
+        homopause_pressure = ((.001*(homopause_temp**1.75)*(1.118))/((eddy_coeff)*7.174))*1.013d6
+
+        ! This has got to be electron pressure, not homopause pressure
+        saha_temp_one = (1.38d-23 * homopause_temp * s % xa(1,1) / (1000. * homopause_pressure / 10.0))
+        saha_temp_one = (1.38d-23 * homopause_temp * s % xa(1,1) / (100.0))
+
+
+        saha_temp_two = (2.0*pi*9.109d-31*1.38d-23*homopause_temp/(6.626d-34**2.0))**1.5
+        saha_temp_three = 2.7182**(-13.6/(8.617d-5*homopause_temp))
+        saha_val = saha_temp_one * saha_temp_two * saha_temp_three
+        ionization_frac = saha_val / (1.0 + saha_val)
+
+        write(*,*) ionization_frac, homopause_pressure, s% lnfree_e(1)
+
+        binary_diff_coeff = 1.04d18 * (homopause_temp ** 0.732)
+        momentum_transfer_H_He = amu * 1.06d-9
+
+        temp_val_one=(1.0-ionization_frac)*(boltzman_cgs*homopause_temp/binary_diff_coeff)
+        temp_val_two=ionization_frac * momentum_transfer_H_He
+
+        final_b = (boltzman_cgs * homopause_temp) / (temp_val_one + temp_val_two)
 
         !From Hu and Seager
         mass_fractionation_effect = 8.0 * (10 ** 20)
@@ -167,34 +197,18 @@
         !Importing the varibles from the start of the step
         scale_height =  s% xtra1
         molar_mass = s% xtra2
-
-        !The 1.25 is the molecular weight of H and He ** .5
-        !V_he = 2.88 V_h2 = 1.98
-        !The 1.013d6 converts pressure from atm to barye
-
-        ! This is the old def, where K_zz = 10**-9
-        ! New def just uses Kzz
-        !homopause_pressure = ((.001 * (homopause_temp ** 1.75) * (1.118)) / ((10 ** 9) * 7.174)) * 1.013d6
-
-        write(*,*) eddy_coeff
-        homopause_pressure = ((.001 * (homopause_temp ** 1.75) * (1.118)) / ((eddy_coeff) * 7.174)) * 1.013d6
         
         radius_above_surface  = -1 * scale_height * LOG(homopause_pressure / (10 ** s% log_surface_pressure))
         homopause_radius = planet_radius_cgs + radius_above_surface
 
-        !Calculating the luminosity
-        !The 22.12 instead of 22.12 is to convert to ergs
+        !Calculating the luminosity, the 22.12 instead of 22.12 is to convert to ergs
         LOG_LEUV = 29.12 - 1.24 * (LOG10((planet_age_cgs / (3.154 * (10 ** 16)))))
         luminosity_euv = (10 ** LOG_LEUV)
 
-        !K_tides doesn't matter too much. It's usually .99, whereas other factors vary by orders of magnitude
-        !epsilon = (((planet_mass_cgs / (host_star_mass)) / 3) ** (1. / 3)) * ((orbital_distance) / planet_radius_cgs)
         epsilon = (((planet_mass_cgs / (host_star_mass)) / 3) ** (1. / 3)) * ((orbital_distance) / homopause_radius)
-
         K_tides = (1.0 - (3.0 / (2.0 * epsilon)) + (1.0 / (2.0 * (epsilon ** 3.0))))
 
-        !The beginning of the interesting flux rates
-        !This is in terms of the number of atoms
+        !Flux rates, in terms of number of atoms
         escape_dl = (standard_cgrav * planet_mass_cgs * (atomic_mass_he4 - atomic_mass_h1) &
         * mass_fractionation_effect) / ((homopause_radius ** 2.0) * kerg * homopause_temp)
 

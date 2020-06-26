@@ -62,7 +62,7 @@
     x_ctrl(57) = 865.4487049499879                     !teq
     x_ctrl(58) = 0           !0 is Hu, 1 is Murray Clay, 2 is nothing. Dont do 2.
     x_ctrl(59) = 1                !Diffusive separation
-    x_ctrl(60) = 10000          !Homopause_temp
+    x_ctrl(60) = 10000.0          !Homopause_temp
 
     star_history_name = "evolve_5.0_0.005_0.24_0.02_0.1_7.2_0.1.mod"
 / ! end of controls namelist
