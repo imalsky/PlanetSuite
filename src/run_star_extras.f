@@ -31,7 +31,7 @@
 
     integer :: time0, time1, clock_rate
     double precision, parameter :: expected_runtime = 28.2 ! minutes
-    integer :: numTacc,j                          !track location of accretion times read
+    integer :: numTacc,j 
 
     contains
 
@@ -51,7 +51,7 @@
         s% how_many_extra_history_columns => how_many_extra_history_columns
         s% data_for_extra_history_columns => data_for_extra_history_columns
         s% how_many_extra_profile_columns => how_many_extra_profile_columns
-        s% data_for_extra_profile_columns => data_for_extra_profile_columns 
+        s% data_for_extra_profile_columns => data_for_extra_profile_columns
 
         s% other_energy => energy_routine
         s% other_adjust_mdot=> mass_loss
@@ -150,19 +150,20 @@
         temp_val_two=ionization_frac * momentum_transfer_H_He
 
         final_b = (boltzman_cgs * homopause_temp) / (temp_val_one + temp_val_two)
-        write(*,*) ionization_frac, final_b, homopause_temp
 
         !From Hu and Seager
-        mass_fractionation_effect = 8.0 * (10 ** 20)
+        !mass_fractionation_effect = 8.0 * (10 ** 20)
+        mass_fractionation_effect = final_b
+        !write(*,*) ionization_frac, final_b, homopause_temp
 
         !The number of atoms of each species
-        h1_atoms = (s% star_mass_h1 * msun)/(amu)
-        he3_atoms = (s% star_mass_he3 * msun)/(3 * amu)
-        he4_atoms = (s% star_mass_he4 * msun)/(4 * amu)
-        c12_atoms = (s% star_mass_c12 * msun)/(12 * amu)
-        n14_atoms = (s% star_mass_n14 * msun)/(14 * amu)
-        o16_atoms = (s% star_mass_o16 * msun)/(16 * amu)
-        ne20_atoms = (s% star_mass_ne20 * msun)/(20 * amu)
+        h1_atoms   = (s% star_mass_h1   * msun) / (amu)
+        he3_atoms  = (s% star_mass_he3  * msun) / (3 * amu)
+        he4_atoms  = (s% star_mass_he4  * msun) / (4 * amu)
+        c12_atoms  = (s% star_mass_c12  * msun) / (12 * amu)
+        n14_atoms  = (s% star_mass_n14  * msun) / (14 * amu)
+        o16_atoms  = (s% star_mass_o16  * msun) / (16 * amu)
+        ne20_atoms = (s% star_mass_ne20 * msun) / (20 * amu)
 
         !Calculating the mg atoms
         mg_mass = 0
@@ -193,23 +194,32 @@
         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         envelope_mass = ((s% star_mass_h1 * msun) / s% xa(1,1))
-        s% xtra3 = envelope_mass
+        s% xtra(3) = envelope_mass
 
         !Importing the varibles from the start of the step
-        scale_height =  s% xtra1
-        molar_mass = s% xtra2
+        scale_height =  s% xtra(1)
+        molar_mass = s% xtra(2)
+
+        !The 1.25 is the molecular weight of H and He ** .5
+        !V_he = 2.88 V_h2 = 1.98
+        !The 1.013d6 converts pressure from atm to barye
         
         radius_above_surface  = -1 * scale_height * LOG(homopause_pressure / (10 ** s% log_surface_pressure))
         homopause_radius = planet_radius_cgs + radius_above_surface
 
-        !Calculating the luminosity, the 22.12 instead of 22.12 is to convert to ergs
+        !Calculating the luminosity
+        !The 22.12 instead of 22.12 is to convert to ergs
         LOG_LEUV = 29.12 - 1.24 * (LOG10((planet_age_cgs / (3.154 * (10 ** 16)))))
         luminosity_euv = (10 ** LOG_LEUV)
 
+        !K_tides doesn't matter too much. It's usually .99, whereas other factors vary by orders of magnitude
+        !epsilon = (((planet_mass_cgs / (host_star_mass)) / 3) ** (1. / 3)) * ((orbital_distance) / planet_radius_cgs)
         epsilon = (((planet_mass_cgs / (host_star_mass)) / 3) ** (1. / 3)) * ((orbital_distance) / homopause_radius)
+
         K_tides = (1.0 - (3.0 / (2.0 * epsilon)) + (1.0 / (2.0 * (epsilon ** 3.0))))
 
-        !Flux rates, in terms of number of atoms
+        !The beginning of the interesting flux rates
+        !This is in terms of the number of atoms
         escape_dl = (standard_cgrav * planet_mass_cgs * (atomic_mass_he4 - atomic_mass_h1) &
         * mass_fractionation_effect) / ((homopause_radius ** 2.0) * kerg * homopause_temp)
 
@@ -268,17 +278,18 @@
 
                 total_loss_rate = (escape_rate_h1 + escape_rate_he4)
                 s% mstar_dot = -total_loss_rate
+                !s% mstar_dot = 0
 
-                s% xtra4 = mass_loss_rate
-                s% xtra5 = right_side
-                s% xtra6 = homopause_radius
-                s% xtra7 = f_r
-                s% xtra8 = escape_rate_h1
-                s% xtra9 = escape_rate_he4
-                s% xtra10 = teq
-                s% xtra11 = 2
-                s% xtra12 = q_c
-                s% xtra13 = q_net
+                s% xtra(4) = mass_loss_rate
+                s% xtra(5) = right_side
+                s% xtra(6) = homopause_radius
+                s% xtra(7) = f_r
+                s% xtra(8) = escape_rate_h1
+                s% xtra(9) = escape_rate_he4
+                s% xtra(10) = teq
+                s% xtra(11) = 2
+                s% xtra(12) = q_c
+                s% xtra(13) = q_net
             END IF
 
             IF (mass_loss_rate > right_side) THEN
@@ -294,17 +305,18 @@
 
                 total_loss_rate = (escape_rate_h1 + escape_rate_he4)
                 s% mstar_dot = -total_loss_rate
+                !s% mstar_dot = 0
 
-                s% xtra4 = mass_loss_rate
-                s% xtra5 = right_side
-                s% xtra6 = homopause_radius
-                s% xtra7 = f_r
-                s% xtra8 = escape_rate_h1
-                s% xtra9 = escape_rate_he4
-                s% xtra10 = teq
-                s% xtra11 = 1
-                s% xtra12 = q_c
-                s% xtra13 = q_net
+                s% xtra(4) = mass_loss_rate
+                s% xtra(5) = right_side
+                s% xtra(6) = homopause_radius
+                s% xtra(7) = f_r
+                s% xtra(8) = escape_rate_h1
+                s% xtra(9) = escape_rate_he4
+                s% xtra(10) = teq
+                s% xtra(11) = 1
+                s% xtra(12) = q_c
+                s% xtra(13) = q_net
             END IF
         END IF
     end subroutine mass_loss
@@ -350,7 +362,7 @@
     end subroutine energy_routine
 
 
-    integer function extras_startup(id, restart, ierr)
+    subroutine extras_startup(id, restart, ierr)
         integer, intent(in) :: id
         logical, intent(in) :: restart
         integer, intent(out) :: ierr
@@ -358,7 +370,6 @@
         ierr = 0
         call star_ptr(id, s, ierr)
         if (ierr /= 0) return
-        extras_startup = 0
         call system_clock(time0,clock_rate)
         if (.not. restart) then
         call alloc_extra_info(s)
@@ -366,40 +377,23 @@
         call unpack_extra_info(s)
         end if
 
-        s% xtra1 = s% scale_height(1)
-        s% xtra2 = s% mu(1)
-    end function extras_startup
+        s% xtra(1) = s% scale_height(1)
+        s% xtra(2) = s% mu(1)
+    end subroutine extras_startup
 
-          
-    subroutine extras_after_evolve(id, id_extra, ierr)
-        integer, intent(in) :: id, id_extra
+
+    subroutine extras_after_evolve(id, ierr)
+        integer, intent(in) :: id
         integer, intent(out) :: ierr
         type (star_info), pointer :: s
         real(dp) :: dt
-        character (len=strlen) :: test
-        
         ierr = 0
         call star_ptr(id, s, ierr)
         if (ierr /= 0) return
-        call system_clock(time1,clock_rate)
-        dt = dble(time1 - time0) / clock_rate / 60
-        call GET_ENVIRONMENT_VARIABLE( &
-           "MESA_TEST_SUITE_CHECK_RUNTIME", test, status=ierr, trim_name=.true.)
-        if (ierr == 0 .and. trim(test) == 'true' .and. dt > 1.5*expected_runtime) then
-           write(*,'(/,a70,2f12.1,99i10/)') &
-              'failed: EXCESSIVE runtime, prev time, retries, backups, steps', &
-              dt, expected_runtime, s% num_retries, s% num_backups, s% model_number
-        else
-           write(*,'(/,a50,2f12.1,99i10/)') 'runtime, prev time, retries, backups, steps', &
-              dt, expected_runtime, s% num_retries, s% num_backups, s% model_number
-        end if
-        ierr = 0
-    end subroutine extras_after_evolve
-
-    
-    !returns either keep_going, retry, backup, or terminate.
-    integer function extras_check_model(id, id_extra)
-        integer, intent(in) :: id, id_extra
+     end subroutine extras_after_evolve
+      
+    integer function extras_check_model(id)
+        integer, intent(in) :: id
         integer :: ierr
         type (star_info), pointer :: s
         ierr = 0
@@ -408,21 +402,19 @@
         extras_check_model = keep_going         
     end function extras_check_model
 
-
-    integer function how_many_extra_history_columns(id, id_extra)
-        integer, intent(in) :: id, id_extra
+    integer function how_many_extra_history_columns(id)
+        integer, intent(in) :: id
         integer :: ierr
         type (star_info), pointer :: s
         ierr = 0
         call star_ptr(id, s, ierr)
         if (ierr /= 0) return
-        how_many_extra_history_columns = 37
+        how_many_extra_history_columns = 39
     end function how_many_extra_history_columns
           
-          
-    subroutine data_for_extra_history_columns(id, id_extra, n, names, vals, ierr)
+    subroutine data_for_extra_history_columns(id, n, names, vals, ierr)
         use star_def
-        integer, intent(in) :: id, id_extra, n
+        integer, intent(in) :: id, n
         character (len=maxlen_history_column_name) :: names(n)
         real(dp) :: vals(n)
         real(dp) :: alpha
@@ -464,13 +456,13 @@
         vals(2) = s% star_age*365*24*3600
 
         names(3) = "planet_mass_cgs"
-        vals(3) = (s% star_mass)*msun
+        vals(3) = (s% star_mass) * msun
 
         names(4) = "Hydrogen_Mass"
-        vals(4) = (s% star_mass_h1)*msun
+        vals(4) = (s% star_mass_h1) * msun
 
         names(5) = "He4_Mass"
-        vals(5) = (s% star_mass_he4)*msun
+        vals(5) = (s% star_mass_he4) * msun
 
         names(6) = "Time Step dt"
         vals(6) = s% dt
@@ -536,10 +528,10 @@
         vals(26) = r_1000_bar
 
         names(27) = 'homopause rad'
-        vals(27) = s% xtra6
+        vals(27) = s% xtra(6)
 
         names(28) = 'f_r'
-        vals(28) = s% xtra7
+        vals(28) = s% xtra(7)
 
         names(29) = 'scale height'
         vals(29) = s% scale_height(1)
@@ -556,30 +548,36 @@
         names(31) = 'R_transit (1d-3 bar, 1d3 barye)' ! approximate 'transit radius' from Miller, Fortney & Jackson 2009 (Eq. 1)
         vals(31) = vals(30) + (-1 * s% scale_height(1) * LOG(1000. / (vals(30))))
 
-        names(32) = 'Region' !
-        vals(32) = s% xtra11
+        names(32) = 'Region'
+        vals(32) = s% xtra(11)
 
         names(33) = 'q_c'
-        vals(33) = s% xtra12
+        vals(33) = s% xtra(12)
 
         names(34) = 'q_net'
-        vals(34) = s% xtra13
+        vals(34) = s% xtra(13)
 
         names(35) = 'escape el'
-        vals(35) = s% xtra4
+        vals(35) = s% xtra(4)
 
         names(36) = 'right side'
-        vals(36) = s% xtra5
+        vals(36) = s% xtra(5)
 
         names(37) = 'envelope mass'
-        vals(37) = s% xtra3
+        vals(37) = s% xtra(3)
+
+        names(38) = 'h lost'
+        vals(38) = s% xtra(14)
+
+        names(39) = 'he lost'
+        vals(39) = s% xtra(15)
 
     end subroutine data_for_extra_history_columns
 
 
-    integer function how_many_extra_profile_columns(id, id_extra)
+    integer function how_many_extra_profile_columns(id)
         use star_def, only: star_info
-        integer, intent(in) :: id, id_extra
+        integer, intent(in) :: id
         integer :: ierr
         type (star_info), pointer :: s
         ierr = 0
@@ -589,10 +587,10 @@
     end function how_many_extra_profile_columns
           
           
-    subroutine data_for_extra_profile_columns(id, id_extra, n, nz, names, vals, ierr)
+    subroutine data_for_extra_profile_columns(id, n, nz, names, vals, ierr)
         use star_def, only: star_info, maxlen_profile_column_name
         use const_def, only: dp
-        integer, intent(in) :: id, id_extra, n, nz
+        integer, intent(in) :: id, n, nz
         character (len=maxlen_profile_column_name) :: names(n)
         real(dp) :: vals(nz,n)
         integer, intent(out) :: ierr
@@ -605,9 +603,9 @@
 
 
     ! returns either keep_going or terminate.
-    integer function extras_finish_step(id, id_extra)
+    integer function extras_finish_step(id)
         use star_def
-        integer, intent(in) :: id, id_extra
+        integer, intent(in) :: id
         integer :: ierr
         integer :: k,i,j
 
@@ -622,11 +620,11 @@
         extras_finish_step = keep_going
         call store_extra_info(s)
 
-        envelope_mass = s% xtra3
-        mass_loss_rate = s% xtra4
-        right_side = s% xtra5
-        escape_rate_h1 = s% xtra8
-        escape_rate_he4 = s% xtra9
+        envelope_mass = s% xtra(3)
+        mass_loss_rate = s% xtra(4)
+        right_side = s% xtra(5)
+        escape_rate_h1 = s% xtra(8)
+        escape_rate_he4 = s% xtra(9)
         comp_bool = s% x_ctrl(56) !False on everything but the evolve inlist
         diffusive_separation = s% x_ctrl(59)
 
@@ -635,11 +633,13 @@
 
             ! Only change envelope fractions during the evolve stage
             IF (comp_bool > 0) THEN
+            total_loss_rate = escape_rate_h1 + escape_rate_he4
+
+            s% xtra(14) = escape_rate_h1 * s% dt
+            s% xtra(15) = escape_rate_he4 * s% dt
 
                 ! Hydrogen only loss
                 IF (mass_loss_rate < right_side) THEN
-                    total_loss_rate = escape_rate_h1 + escape_rate_he4
-
                     do i = 1, s% nz
                         s% xa(1,i) = ((envelope_mass * s% xa(1,i)) - (escape_rate_h1 * s% dt)) &
                         / (envelope_mass - (escape_rate_h1 * s% dt))
@@ -656,8 +656,6 @@
 
                 ! Hydrogen and Helium loss
                 IF (mass_loss_rate > right_side) THEN
-                    total_loss_rate = escape_rate_h1 + escape_rate_he4
-
                     do i = 1, s% nz
                         s% xa(1,i) = ((envelope_mass * s% xa(1,i)) - (escape_rate_h1 * s% dt)) &
                         / (envelope_mass - (total_loss_rate * s% dt))
@@ -676,10 +674,7 @@
             END IF
         END IF
     end function extras_finish_step
-
-
-
-          
+   
           
     subroutine alloc_extra_info(s)
         integer, parameter :: extra_info_alloc = 1

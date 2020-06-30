@@ -32,7 +32,7 @@
     max_number_retries = 500
 
     ! surface heating
-    column_depth_for_irradiation = 82.74703647514185 ! 3.d2 cm^2/g
+    column_depth_for_irradiation = 84.8628423640371 ! 3.d2 cm^2/g
     irradiation_flux = 127235523.13586774! 1.d9 erg/cm^2/s ! day side flux!!! Bill puts in 1/4 by hand
 
     ! when to stop
