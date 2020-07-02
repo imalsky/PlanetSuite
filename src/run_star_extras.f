@@ -93,6 +93,7 @@
         ! Calculating the ionization fraction from the saha equation
         double precision :: ionization_frac, number_density, planck_const, electron_mass
         double precision :: saha_temp_one, saha_temp_two, saha_temp_three
+        double precision :: temp_quad
         double precision :: saha_val
 
         ! Calculating the effective binary diffusion coefficient
@@ -132,15 +133,15 @@
         homopause_pressure = ((.001*(homopause_temp**1.75)*(1.118))/((eddy_coeff)*7.174))*1.013d6
 
         ! This has got to be electron pressure, not homopause pressure
-        ! The 0.5 is a simplifying assumption
-        ! The homopause pressure is P_ions + P_electrons
-        ! This says P = 2.0 * P_electrons
         saha_temp_one = (1.3806d-23 * homopause_temp / (0.5 * homopause_pressure / 10.0))
-
         saha_temp_two = (2.0*pi*9.10938d-31*1.3806d-23*homopause_temp/(6.62607d-34**2.0))**1.5
         saha_temp_three = 2.718281828**(-13.6/(8.61733d-5*homopause_temp))
         saha_val = saha_temp_one * saha_temp_two * saha_temp_three
-        ionization_frac = saha_val / (1.0 + saha_val)
+        
+        ! Now I need to do some fancy stuff because I'm solving a quadratic
+        ! I assume P_electron = Pressure * ionization frac
+        temp_quad = (saha_val ** 2.0 + (4.0 * saha_val)) ** 0.5
+        ionization_frac = 0.5 * (temp_quad - saha_val)
 
         binary_diff_coeff = 1.04d18 * (homopause_temp ** 0.732)
         momentum_transfer_H_He = amu * 1.06d-9
@@ -154,7 +155,7 @@
         !From Hu and Seager
         !mass_fractionation_effect = 8.0 * (10 ** 20)
         mass_fractionation_effect = final_b
-        !write(*,*) ionization_frac, final_b, homopause_temp
+        write(*,*) ionization_frac, final_b, homopause_temp
 
         !The number of atoms of each species
         h1_atoms   = (s% star_mass_h1   * msun) / (amu)
