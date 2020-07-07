@@ -2,13 +2,13 @@
     show_log_description_at_start = .true.
 
     load_saved_model = .true.
-    saved_model_name = "irrad_5.0_0.005_0.24_0.02_0.1_7.2.mod"
+    saved_model_name = "irrad_10.0_0.005_0.24_0.02_0.1_7.4.mod"
 
     save_model_when_terminate = .true.
-    save_model_filename = "evolve_5.0_0.005_0.24_0.02_0.1_7.2_0.1.mod"
+    save_model_filename = "evolve_10.0_0.005_0.24_0.02_0.1_7.4_0.1.mod"
     
     write_profile_when_terminate = .true.
-    filename_for_profile_when_terminate = "profile_evolve5.0_0.005_0.24_0.02_0.1_7.2_0.1"
+    filename_for_profile_when_terminate = "profile_evolve10.0_0.005_0.24_0.02_0.1_7.4_0.1"
     
     set_initial_model_number = .true.
     initial_model_number = 0       
@@ -32,7 +32,7 @@
     max_number_retries = 500
 
     ! surface heating
-    column_depth_for_irradiation = 84.8628423640371 ! 3.d2 cm^2/g
+    column_depth_for_irradiation = 63.27351630090766 ! 3.d2 cm^2/g
     irradiation_flux = 127235523.13586774! 1.d9 erg/cm^2/s ! day side flux!!! Bill puts in 1/4 by hand
 
     ! when to stop
@@ -62,9 +62,9 @@
     x_ctrl(57) = 865.4487049499879                     !teq
     x_ctrl(58) = 0           !0 is Hu, 1 is Murray Clay, 2 is nothing. Dont do 2.
     x_ctrl(59) = 1                !Diffusive separation
-    x_ctrl(60) = 8000.0          !Homopause_temp
+    x_ctrl(60) = 10000.0          !Homopause_temp
 
-    star_history_name = "evolve_5.0_0.005_0.24_0.02_0.1_7.2_0.1.mod"
+    star_history_name = "evolve_10.0_0.005_0.24_0.02_0.1_7.4_0.1.mod"
 / ! end of controls namelist
 &pgstar
 / ! end of pgstar namelist
