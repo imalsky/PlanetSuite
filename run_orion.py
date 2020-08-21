@@ -27,7 +27,7 @@ enFracList=[0.005]
 yList = [.24]
 zList = [.02]
 entropyList = [-1]
-n_frac_list = [0.10]
+n_frac_list = [0.30]
 
 ####################################################
 #########        Star Parameters              ######

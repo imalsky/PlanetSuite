@@ -31,6 +31,10 @@
     max_number_backups = 500
     max_number_retries = 500
 
+    ! Atmospheric Conditions
+    atm_option = 'T_tau'
+    atm_T_tau_relation = 'Eddington'
+
     ! surface heating
     column_depth_for_irradiation = <<column_depth>> ! 3.d2 cm^2/g
     irradiation_flux = <<flux_dayside>>! 1.d9 erg/cm^2/s ! day side flux!!! Bill puts in 1/4 by hand
