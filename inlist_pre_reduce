@@ -23,7 +23,7 @@
     new_mass = <<mp>> !! Sets it to 30x mp
     steps_to_take_before_terminate = 1000 
 
-    relax_to_this_tau_factor = 1.0
+    relax_to_this_tau_factor = 1.5
     relax_tau_factor = .true.
 / ! end of star_job namelist
 

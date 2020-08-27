@@ -2,13 +2,13 @@
     show_log_description_at_start = .true.
 
     load_saved_model = .true.
-    saved_model_name = "irrad_10.0_0.005_0.24_0.02_0.1_7.4.mod"
+    saved_model_name = "irrad_10.0_0.006_0.24_0.02_0.1_7.4.mod"
 
     save_model_when_terminate = .true.
-    save_model_filename = "evolve_10.0_0.005_0.24_0.02_0.1_7.4_0.1.mod"
+    save_model_filename = "evolve_10.0_0.006_0.24_0.02_0.1_7.4_0.1.mod"
     
     write_profile_when_terminate = .true.
-    filename_for_profile_when_terminate = "profile_evolve10.0_0.005_0.24_0.02_0.1_7.4_0.1"
+    filename_for_profile_when_terminate = "profile_evolve10.0_0.006_0.24_0.02_0.1_7.4_0.1"
     
     set_initial_model_number = .true.
     initial_model_number = 0       
@@ -19,6 +19,11 @@
     eos_file_prefix = 'mesa'
     kappa_file_prefix = 'gs98'
     kappa_lowT_prefix = 'lowT_Freedman11'
+
+    !set EOS limits
+    !set_logRho_OPAL_SCVH_limits = .true.
+    !logRho1_OPAL_SCVH_limit = 3.52d0 
+    !logRho2_OPAL_SCVH_limit = 3.50d0 
 
     steps_to_take_before_terminate = 1000
 / ! end of star_job namelist
@@ -31,14 +36,18 @@
     max_number_backups = 500
     max_number_retries = 500
 
+    ! Atmospheric Conditions
+    atm_option = 'T_tau'
+    atm_T_tau_relation = 'Eddington'
+
     ! surface heating
-    column_depth_for_irradiation = 63.27351630090766 ! 3.d2 cm^2/g
+    column_depth_for_irradiation = 91.12811718547455 ! 3.d2 cm^2/g
     irradiation_flux = 127235523.13586774! 1.d9 erg/cm^2/s ! day side flux!!! Bill puts in 1/4 by hand
 
     ! when to stop
     max_age = 1d10
     max_model_number = 2500 ! don't let it go on and on if run stuck
-    logQ_limit = 5.0
+    logQ_limit = 50.0
         
     ! output to files and terminal
     photo_interval  = 1000
@@ -64,7 +73,7 @@
     x_ctrl(59) = 1                !Diffusive separation
     x_ctrl(60) = 10000.0          !Homopause_temp
 
-    star_history_name = "evolve_10.0_0.005_0.24_0.02_0.1_7.4_0.1.mod"
+    star_history_name = "evolve_10.0_0.006_0.24_0.02_0.1_7.4_0.1.mod"
 / ! end of controls namelist
 &pgstar
 / ! end of pgstar namelist

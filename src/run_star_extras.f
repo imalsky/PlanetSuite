@@ -69,7 +69,7 @@
         double precision :: orbital_distance, eddy_coeff, homopause_pressure, bond_albedo, escape_regime, mass_loss_rate
 
         double precision :: planet_radius_cgs, planet_age_cgs, planet_mass_cgs, molar_mass, height
-        double precision :: mass_fractionation_effect, homopause_temp, homopause_radius, q_c, q_net
+        double precision :: mass_fractionation_effect, homopause_temp, q_c, q_net
         double precision :: h1_number_frac, he4_number_frac,atomic_mass_he4,atomic_mass_h1
         double precision :: he3_num_frac, c12_num_frac, n14_num_frac, o16_num_frac, ne20_num_frac, mg24_num_frac
 
@@ -99,7 +99,8 @@
         ! Calculating the effective binary diffusion coefficient
         double precision :: boltzman_cgs, binary_diff_coeff
         double precision :: momentum_transfer_H_He, temp_val_one, temp_val_two
-        double precision :: final_b
+        double precision :: final_b, transit_radius, z_transit, transit_temp1, transit_temp2, scale_const
+        double precision :: homopause_radius, z_homopause, homo_temp1, homo_temp2
 
         integer :: k,i,j
 
@@ -112,8 +113,8 @@
         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         !Converting all the planetary paremeters to cgs
-        planet_radius_cgs= (10 ** (s% log_surface_radius)) * Rsun
-        planet_age_cgs= (s% star_age) * 365 * 24 * 3600 !+ (1.892 * (10 ** 14))
+        planet_radius_cgs= (10.0 ** (s% log_surface_radius)) * Rsun
+        planet_age_cgs= (s% star_age) * 365.0 * 24.0 * 3600.0 !+ (1.892 * (10.0 ** 14.0))
         planet_mass_cgs = (s% star_mass) * msun
 
         comp_bool = 0
@@ -129,8 +130,11 @@
         teq = s% x_ctrl(57)
         escape_regime = s% x_ctrl(58)
     
+        !The 1.25 is the molecular weight of H and He ** .5
+        !V_he = 2.88 V_h2 = 1.98
+        !The 1.013d6 converts pressure from atm to barye
         homopause_temp = s% x_ctrl(60)  
-        homopause_pressure = ((.001*(homopause_temp**1.75)*(1.118))/((eddy_coeff)*7.174))*1.013d6
+        homopause_pressure = ((0.001*(homopause_temp**1.75)*(1.118))/((eddy_coeff)*7.174))*1.013d6
 
         ! This has got to be electron pressure, not homopause pressure
         saha_temp_one = (1.3806d-23 * homopause_temp / (0.5 * homopause_pressure / 10.0))
@@ -151,35 +155,31 @@
         temp_val_two=ionization_frac * momentum_transfer_H_He
 
         final_b = (boltzman_cgs * homopause_temp) / (temp_val_one + temp_val_two)
-
-        !From Hu and Seager
-        !mass_fractionation_effect = 8.0 * (10 ** 20)
         mass_fractionation_effect = final_b
-        write(*,*) ionization_frac, final_b, homopause_temp
 
         !The number of atoms of each species
         h1_atoms   = (s% star_mass_h1   * msun) / (amu)
-        he3_atoms  = (s% star_mass_he3  * msun) / (3 * amu)
-        he4_atoms  = (s% star_mass_he4  * msun) / (4 * amu)
-        c12_atoms  = (s% star_mass_c12  * msun) / (12 * amu)
-        n14_atoms  = (s% star_mass_n14  * msun) / (14 * amu)
-        o16_atoms  = (s% star_mass_o16  * msun) / (16 * amu)
-        ne20_atoms = (s% star_mass_ne20 * msun) / (20 * amu)
+        he3_atoms  = (s% star_mass_he3  * msun) / (3.0 * amu)
+        he4_atoms  = (s% star_mass_he4  * msun) / (4.0 * amu)
+        c12_atoms  = (s% star_mass_c12  * msun) / (12.0 * amu)
+        n14_atoms  = (s% star_mass_n14  * msun) / (14.0 * amu)
+        o16_atoms  = (s% star_mass_o16  * msun) / (16.0 * amu)
+        ne20_atoms = (s% star_mass_ne20 * msun) / (20.0 * amu)
 
         !Calculating the mg atoms
-        mg_mass = 0
+        mg_mass = 0.0
         mg_mass = s% xa(8,1) * s% star_mass * msun
-        mg24_atoms = (mg_mass)/(24 * amu)
+        mg24_atoms = (mg_mass)/(24.0 * amu)
 
         !Calculating Abundances
         total_atoms = h1_atoms + he3_atoms + he4_atoms + c12_atoms &
         + n14_atoms + o16_atoms + ne20_atoms + mg24_atoms
 
-        frac_absorbing_radius = 1
+        frac_absorbing_radius = 1.0
 
         !Calculating Mole Fraction
-        atomic_mass_h1 = 1 * amu
-        atomic_mass_he4 = 4 * amu
+        atomic_mass_h1 = 1.0 * amu
+        atomic_mass_he4 = 4.0 * amu
         h1_number_frac  = h1_atoms / total_atoms
         he4_number_frac = he4_atoms / total_atoms
 
@@ -200,23 +200,33 @@
         !Importing the varibles from the start of the step
         scale_height =  s% xtra(1)
         molar_mass = s% xtra(2)
+    
+        scale_const = s% scale_height(1) / planet_radius_cgs ** 2.0
 
-        !The 1.25 is the molecular weight of H and He ** .5
-        !V_he = 2.88 V_h2 = 1.98
-        !The 1.013d6 converts pressure from atm to barye
-        
-        radius_above_surface  = -1 * scale_height * LOG(homopause_pressure / (10 ** s% log_surface_pressure))
-        homopause_radius = planet_radius_cgs + radius_above_surface
+        ! 1000 is 1mbar in barye
+        ! This gets the transit z
+        transit_temp1 = -2.0 * LOG(10.0 ** s% log_surface_pressure / 1000.0) * planet_radius_cgs * scale_const
+        transit_temp2 = (1.0 - 4.0 * LOG(10.0 ** s% log_surface_pressure / 1000.0) * scale_const * planet_radius_cgs) ** 0.5
+        z_transit = (transit_temp1 - transit_temp2 + 1.0) / (2.0 * LOG(10.0 ** s% log_surface_pressure / 1000.0) * scale_const)
+        transit_radius = z_transit + planet_radius_cgs
+
+        ! This gets the homopause z
+        homo_temp1 = -2.0 * LOG(10.0 ** s% log_surface_pressure / homopause_pressure) * planet_radius_cgs * scale_const
+        homo_temp2 = (1.0 - 4.0 * LOG(10.0 ** s% log_surface_pressure / homopause_pressure) * scale_const * planet_radius_cgs) ** 0.5
+        z_homopause = (homo_temp1 - homo_temp2 + 1.0) / (2.0 * LOG(10.0 ** s% log_surface_pressure / homopause_pressure) * scale_const)
+        homopause_radius = z_homopause + planet_radius_cgs
+
+        !write(*,*) transit_radius / planet_radius_cgs, homopause_radius / planet_radius_cgs
+        !write(*,*) transit_radius / (planet_radius_cgs + -1 * s% scale_height(1) * LOG(1000.0 / (10.0 ** s% log_surface_pressure)))
+        !write(*,*) homopause_radius / (planet_radius_cgs + -1 * s% scale_height(1) * LOG(homopause_pressure / (10.0 ** s% log_surface_pressure))) 
 
         !Calculating the luminosity
         !The 22.12 instead of 22.12 is to convert to ergs
-        LOG_LEUV = 29.12 - 1.24 * (LOG10((planet_age_cgs / (3.154 * (10 ** 16)))))
-        luminosity_euv = (10 ** LOG_LEUV)
+        LOG_LEUV = 29.12 - 1.24 * (LOG10((planet_age_cgs / (3.154 * (10.0 ** 16.0)))))
+        luminosity_euv = (10.0 ** LOG_LEUV)
 
-        !K_tides doesn't matter too much. It's usually .99, whereas other factors vary by orders of magnitude
-        !epsilon = (((planet_mass_cgs / (host_star_mass)) / 3) ** (1. / 3)) * ((orbital_distance) / planet_radius_cgs)
-        epsilon = (((planet_mass_cgs / (host_star_mass)) / 3) ** (1. / 3)) * ((orbital_distance) / homopause_radius)
-
+        !K Tides Factor
+        epsilon = (((planet_mass_cgs / (host_star_mass)) / 3.0) ** (1.0 / 3.0)) * ((orbital_distance) / homopause_radius)
         K_tides = (1.0 - (3.0 / (2.0 * epsilon)) + (1.0 / (2.0 * (epsilon ** 3.0))))
 
         !The beginning of the interesting flux rates
@@ -225,8 +235,7 @@
         * mass_fractionation_effect) / ((homopause_radius ** 2.0) * kerg * homopause_temp)
 
 	    !The 10**7 gets q_c into ergs from watts
-       	q_c = (3.23d5) * ((planet_mass_cgs / 1000) ** (1.5)) * (homopause_radius / 100) ** (-.5) * (molar_mass / 6.022d26)
-
+       	q_c = (3.23d5) * ((planet_mass_cgs / 1000.0) ** (1.5)) * (homopause_radius / 100.0) ** (-0.5) * (molar_mass / 6.022d26)
        	q_net = frac_absorbed_euv * (luminosity_euv / (10.0 ** 7.0)) * ((homopause_radius / 100.0) ** 2.0)&
        	/ (4.0 * ((orbital_distance / 100.0) ** 2.0))
 
@@ -238,16 +247,16 @@
         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         !!!!!!!          Radiation recombination limited          !!!!!!!
         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        flux = (luminosity_euv / (4 * 3.14159 * (orbital_distance ** 2)))
+        flux = (luminosity_euv / (4.0 * 3.14159 * (orbital_distance ** 2.0)))
 
-        c_s = (2.0 * kerg * 10000 / atomic_mass_h1) ** (0.50)
+        c_s = (2.0 * kerg * 10000.0 / atomic_mass_h1) ** (0.50)
 
         flux_term = standard_cgrav * planet_mass_cgs / & 
-        (3.204d-11 * 2.7d-13 * (planet_radius_cgs ** 2) * (c_s ** 2))
+        (3.204d-11 * 2.7d-13 * (planet_radius_cgs ** 2.0) * (c_s ** 2.0))
 
-        exoponent_term = 2.71828 ** (2 - ((standard_cgrav * planet_mass_cgs) / ((c_s ** 2) * planet_radius_cgs)))
+        exoponent_term = 2.71828 ** (2.0 - ((standard_cgrav * planet_mass_cgs) / ((c_s ** 2.0) * planet_radius_cgs)))
 
-        rr_mass_loss = pi * (standard_cgrav * planet_mass_cgs / (c_s ** 2)) ** 2 * &
+        rr_mass_loss = pi * (standard_cgrav * planet_mass_cgs / (c_s ** 2.0)) ** 2.0 * &
                     c_s * atomic_mass_h1  * (flux_term ** (0.5)) * exoponent_term * (flux ** 0.5)
 
         ! Escape regime 0 is hu et al
@@ -270,7 +279,7 @@
 			END IF
 		END IF
 
-        right_side = escape_dl * h1_number_frac * atomic_mass_h1 * 4 * pi * (homopause_radius ** 2)
+        right_side = escape_dl * h1_number_frac * atomic_mass_h1 * 4.0 * pi * (homopause_radius ** 2.0)
 
         IF (comp_bool > 0) THEN
             IF (mass_loss_rate < right_side) THEN
@@ -291,22 +300,22 @@
                 s% xtra(11) = 2
                 s% xtra(12) = q_c
                 s% xtra(13) = q_net
+                s% xtra(16) = transit_radius
             END IF
 
             IF (mass_loss_rate > right_side) THEN
                 escape_rate_h1 = ((mass_loss_rate * atomic_mass_h1 * h1_number_frac) + & 
                 (escape_dl * atomic_mass_h1 * atomic_mass_he4 &
-                * h1_number_frac * he4_number_frac * 4 * pi * (homopause_radius ** 2))) &
+                * h1_number_frac * he4_number_frac * 4.0 * pi * (homopause_radius ** 2))) &
                 / ((atomic_mass_h1 * h1_number_frac) + (atomic_mass_he4 * he4_number_frac))
 
                 escape_rate_he4 = ((mass_loss_rate * atomic_mass_he4 * he4_number_frac) - &
                 (escape_dl * atomic_mass_h1 * atomic_mass_he4 &
-                * h1_number_frac * he4_number_frac * 4 * pi * (homopause_radius ** 2))) &
+                * h1_number_frac * he4_number_frac * 4.0 * pi * (homopause_radius ** 2.0))) &
                 / ((atomic_mass_h1 * h1_number_frac) + (atomic_mass_he4 * he4_number_frac))
 
                 total_loss_rate = (escape_rate_h1 + escape_rate_he4)
                 s% mstar_dot = -total_loss_rate
-                !s% mstar_dot = 0
 
                 s% xtra(4) = mass_loss_rate
                 s% xtra(5) = right_side
@@ -318,6 +327,7 @@
                 s% xtra(11) = 1
                 s% xtra(12) = q_c
                 s% xtra(13) = q_net
+                s% xtra(16) = transit_radius
             END IF
         END IF
     end subroutine mass_loss
@@ -547,7 +557,7 @@
         end do
 
         names(31) = 'R_transit (1d-3 bar, 1d3 barye)' ! approximate 'transit radius' from Miller, Fortney & Jackson 2009 (Eq. 1)
-        vals(31) = vals(30) + (-1 * s% scale_height(1) * LOG(1000. / (vals(30))))
+        vals(31) = s% xtra(16)
 
         names(32) = 'Region'
         vals(32) = s% xtra(11)
