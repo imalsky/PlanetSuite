@@ -1,79 +1,46 @@
-&star_job
-    show_log_description_at_start = .true.
 
-    load_saved_model = .true.
-    saved_model_name = "irrad_10.0_0.006_0.24_0.02_0.1_7.4.mod"
+&star_job
+    show_log_description_at_start = .true. 
 
     save_model_when_terminate = .true.
-    save_model_filename = "evolve_10.0_0.006_0.24_0.02_0.1_7.4_0.1.mod"
-    
-    write_profile_when_terminate = .true.
-    filename_for_profile_when_terminate = "profile_evolve10.0_0.006_0.24_0.02_0.1_7.4_0.1"
-    
+    save_model_filename = "pre_core_12.59_0.006.mod"
+
+    load_saved_model = .true.
+    saved_model_name = "pre_reduce_12.59_.mod"
+
+
     set_initial_model_number = .true.
-    initial_model_number = 0       
+    initial_model_number = 0
 
     set_initial_age = .true.
-    initial_age = 6000000.0
+    initial_age = 0
 
     eos_file_prefix = 'mesa'
     kappa_file_prefix = 'gs98'
     kappa_lowT_prefix = 'lowT_Freedman11'
 
-    !set EOS limits
-    !set_logRho_OPAL_SCVH_limits = .true.
-    !logRho1_OPAL_SCVH_limit = 3.52d0 
-    !logRho2_OPAL_SCVH_limit = 3.50d0 
+    relax_core = .true.
+    relax_initial_core = .true.
+    new_core_mass = 3.7558478885984323e-06
+    !dlg_core_mass_per_step = 1d-4
+    core_avg_rho = 9.431319018729502
+    core_avg_eps = 1d-6
 
-    steps_to_take_before_terminate = 1000
+    steps_to_take_before_terminate = 1000 
 / ! end of star_job namelist
 
-&controls  
-    ! Trying out a new chunk of things
-    !use_gold_tolerances = .true.
-    !mesh_delta_coeff = 0.5
-    
-    max_number_backups = 500
+&controls 
+    max_age = 1d7
+    max_years_for_timestep = 1d6
+
+    max_number_backups = 100
     max_number_retries = 500
-
-    ! Atmospheric Conditions
-    atm_option = 'T_tau'
-    atm_T_tau_relation = 'Eddington'
-
-    ! surface heating
-    column_depth_for_irradiation = 91.12811718547455 ! 3.d2 cm^2/g
-    irradiation_flux = 127235523.13586774! 1.d9 erg/cm^2/s ! day side flux!!! Bill puts in 1/4 by hand
-
-    ! when to stop
-    max_age = 1d10
-    max_model_number = 2500 ! don't let it go on and on if run stuck
-    logQ_limit = 50.0
-        
-    ! output to files and terminal
-    photo_interval  = 1000
-    profile_interval = 1000
-    max_num_profile_models= 50
-    history_interval = 1
-    write_header_frequency = 10
-
-    use_other_adjust_mdot = .true.
-    use_other_energy = .true.
-    x_ctrl(3) = 1d10 ! core heat capacity  eps=erg/g/K
-    x_ctrl(4) = 1.0  ! fraction of core mass in "chondrite-like" rocky material
-
-    x_ctrl(50) = 0.1                  !frac_absorbed_euv (η)
-    x_ctrl(51) = 1.0                       !frac_absorbing_radius (a)
-    x_ctrl(52) = 1.0                      !host_star_mass (this gets multiplied by msol)
-    x_ctrl(53) = 0.2                      !Bond Albedo
-    x_ctrl(54) = 0.1                 !orbital_distance (this gets multipled by au)
-    x_ctrl(55) = 1000000000.0                      !eddy coefficient
-    x_ctrl(56) = 1                           !Only run the comp change if true 
-    x_ctrl(57) = 865.4487049499879                     !teq
-    x_ctrl(58) = 0           !0 is Hu, 1 is Murray Clay, 2 is nothing. Dont do 2.
-    x_ctrl(59) = 1                !Diffusive separation
-    x_ctrl(60) = 10000.0          !Homopause_temp
-
-    star_history_name = "evolve_10.0_0.006_0.24_0.02_0.1_7.4_0.1.mod"
+    max_model_number = 1000
+    mesh_delta_coeff = 0.5
+    
+    !star_history_name = "pre_core_12.59_0.006.mod"
 / ! end of controls namelist
+
+
 &pgstar
 / ! end of pgstar namelist

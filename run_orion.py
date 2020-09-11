@@ -21,10 +21,10 @@ initial_mod = "initial_planet.mod"
 ####################################################
 #########         PARAMETERS LISTS         #########
 ####################################################
-mpList=[10.0]
-orbitalList=[0.033, 0.066, 0.10]
+mpList=[12.59]
+orbitalList=[0.09012]
 
-enFracList=[0.002, 0.004, 0.006]
+enFracList=[0.004]
 
 yList = [.24]
 zList = [.02]
@@ -34,15 +34,14 @@ n_frac_list = [0.10]
 ####################################################
 #########        Star Parameters              ######
 ####################################################                            
-rs = 1.                      #star radius in rsun
-ms = 1.                           #host_star_mass
-Teff_star = 6000                #Host Star Temp
+rs = 1.18                      #star radius in rsun
+ms = 1.07                            #host_star_mass
+Teff_star = 6290.0                #Host Star Temp
 
 ####################################################
 #########        hompause temperature         ######
 ####################################################   
-homopause_temp = 10000.0
-
+homopause_temp = 3000.0
 
 ####################################################
 #########     Mass Loss Assumptions           ######
