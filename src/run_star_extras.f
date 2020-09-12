@@ -205,20 +205,22 @@
 
         ! 1000 is 1mbar in barye
         ! This gets the transit z
-        transit_temp1 = -2.0 * LOG(10.0 ** s% log_surface_pressure / 1000.0) * planet_radius_cgs * scale_const
-        transit_temp2 = (1.0 - 4.0 * LOG(10.0 ** s% log_surface_pressure / 1000.0) * scale_const * planet_radius_cgs) ** 0.5
-        z_transit = (transit_temp1 - transit_temp2 + 1.0) / (2.0 * LOG(10.0 ** s% log_surface_pressure / 1000.0) * scale_const)
+        !transit_temp1 = 2.0 * scale_const * LOG(1000.0 / 10.0 ** s% log_surface_pressure) * planet_radius_cgs
+        !transit_temp2 = ((4.0 * LOG(1000.0 / 10.0 ** s% log_surface_pressure) * scale_const * planet_radius_cgs) + 1.0) ** 0.5
+        !z_transit = (-1.0 * transit_temp1 - transit_temp2 - 1.0) / (2.0 * LOG(1000.0 / 10.0 ** s% log_surface_pressure) * scale_const)
+        !transit_radius = z_transit + planet_radius_cgs
+
+        z_transit = -1.0 * s% scale_height(1) * LOG(1000.0 / 10.0 ** s% log_surface_pressure)
         transit_radius = z_transit + planet_radius_cgs
 
         ! This gets the homopause z
-        homo_temp1 = -2.0 * LOG(10.0 ** s% log_surface_pressure / homopause_pressure) * planet_radius_cgs * scale_const
-        homo_temp2 = (1.0 - 4.0 * LOG(10.0 ** s% log_surface_pressure / homopause_pressure) * scale_const * planet_radius_cgs) ** 0.5
-        z_homopause = (homo_temp1 - homo_temp2 + 1.0) / (2.0 * LOG(10.0 ** s% log_surface_pressure / homopause_pressure) * scale_const)
+        !homo_temp1 = 2.0 * scale_const * LOG(homopause_pressure / 10.0 ** s% log_surface_pressure) * planet_radius_cgs
+        !homo_temp2 = ((4.0 * LOG(homopause_pressure / 10.0 ** s% log_surface_pressure) * scale_const * planet_radius_cgs) + 1.0) ** 0.5
+        !z_homopause = (-1.0 * transit_temp1 - transit_temp2 - 1.0) / (2.0 * LOG(homopause_pressure / 10.0 ** s% log_surface_pressure) * scale_const)
+        !homopause_radius = z_homopause + planet_radius_cgs
+    
+        z_homopause = -1.0 * s% scale_height(1) * LOG(homopause_pressure / 10.0 ** s% log_surface_pressure)
         homopause_radius = z_homopause + planet_radius_cgs
-
-        !write(*,*) transit_radius / planet_radius_cgs, homopause_radius / planet_radius_cgs
-        !write(*,*) transit_radius / (planet_radius_cgs + -1 * s% scale_height(1) * LOG(1000.0 / (10.0 ** s% log_surface_pressure)))
-        !write(*,*) homopause_radius / (planet_radius_cgs + -1 * s% scale_height(1) * LOG(homopause_pressure / (10.0 ** s% log_surface_pressure))) 
 
         !Calculating the luminosity
         !The 22.12 instead of 22.12 is to convert to ergs
