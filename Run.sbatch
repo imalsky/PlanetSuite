@@ -8,9 +8,11 @@
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=isaacmalsky@gmail.com
 
-module load Anaconda3/5.1.0
+module load python/anaconda-2020.02
+source activate /home/aneil/conda
+module unload python
 
-export OMP_NUM_THREADS=16
+export OMP_NUM_THREADS=4
 
 ./clean
 ./clear_inlists
