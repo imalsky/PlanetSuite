@@ -136,16 +136,16 @@
         homopause_temp = s% x_ctrl(60)  
         homopause_pressure = ((0.001*(homopause_temp**1.75)*(1.118))/((eddy_coeff)*7.174))*1.013d6
 
-        ! This has got to be electron pressure, not homopause pressure
-        saha_temp_one = (1.3806d-23 * homopause_temp / (0.5 * homopause_pressure / 10.0))
+        ! Includes some assumptions, could be better
+        saha_temp_one = (1.3806d-23 * homopause_temp / (homopause_pressure / 10.0))
         saha_temp_two = (2.0*pi*9.10938d-31*1.3806d-23*homopause_temp/(6.62607d-34**2.0))**1.5
         saha_temp_three = 2.718281828**(-13.6/(8.61733d-5*homopause_temp))
         saha_val = saha_temp_one * saha_temp_two * saha_temp_three
-        
-        ! Now I need to do some fancy stuff because I'm solving a quadratic
-        ! I assume P_electron = Pressure * ionization frac
-        temp_quad = (saha_val ** 2.0 + (4.0 * saha_val)) ** 0.5
-        ionization_frac = 0.5 * (temp_quad - saha_val)
+ 
+        ionization_frac = (0.5)*((saha_val * (saha_val + 4.0)) ** 0.5 - saha_val)
+
+
+
 
         binary_diff_coeff = 1.04d18 * (homopause_temp ** 0.732)
         momentum_transfer_H_He = amu * 1.06d-9
